@@ -2,7 +2,7 @@
 
 A compact, information-dense [Pi-hole](https://pi-hole.net/) stats card for [Home Assistant](https://www.home-assistant.io/) Lovelace dashboards.
 
-![Pi-hole Card Preview](https://raw.githubusercontent.com/your-username/pihole-card/main/preview.png)
+![Pi-hole Card Preview](https://raw.githubusercontent.com/bangadrum/pihole-card/main/preview.png)
 
 ---
 
@@ -50,7 +50,7 @@ A compact, information-dense [Pi-hole](https://pi-hole.net/) stats card for [Hom
 
 ### Manual
 
-1. Download [`pihole-card.js`](https://raw.githubusercontent.com/your-username/pihole-card/main/pihole-card.js)
+1. Download [`pihole-card.js`](https://raw.githubusercontent.com/bangadrum/pihole-card/main/pihole-card.js)
 2. Copy it to your Home Assistant config directory:
    ```
    /config/www/pihole-card.js
