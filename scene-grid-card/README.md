@@ -2,7 +2,7 @@
 
 A dense, tap-friendly scene launcher card for [Home Assistant](https://www.home-assistant.io/) dashboards. Fits more scenes in less space than a standard entities card, with per-tile colour accents and a satisfying activation flash.
 
-![scene-grid-card preview](https://via.placeholder.com/640x200/1c1c1e/f2f2f7?text=scene-grid-card)
+![scene-grid-card preview](https://raw.githubusercontent.com/bangadrum/ha-cards/refs/heads/main/scene-grid-card/preview.png)
 
 ---
 
