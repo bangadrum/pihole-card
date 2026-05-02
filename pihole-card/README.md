@@ -2,7 +2,7 @@
 
 A compact, information-dense [Pi-hole](https://pi-hole.net/) stats card for [Home Assistant](https://www.home-assistant.io/) Lovelace dashboards.
 
-![Pi-hole Card Preview](https://raw.githubusercontent.com/bangadrum/ha-cards/pihole-card/main/preview.png)
+![Pi-hole Card Preview](https://raw.githubusercontent.com/bangadrum/ha-cards/main/pihole-card/preview.png)
 
 ---
 
@@ -50,7 +50,7 @@ A compact, information-dense [Pi-hole](https://pi-hole.net/) stats card for [Hom
 
 ### Manual
 
-1. Download [`pihole-card.js`](https://raw.githubusercontent.com/bangadrum/ha-cards/pihole-card/main/pihole-card.js)
+1. Download [`pihole-card.js`](https://raw.githubusercontent.com/bangadrum/ha-cards/main/pihole-card/pihole-card.js)
 2. Copy it to your Home Assistant config directory:
    ```
    /config/www/pihole-card.js
@@ -63,7 +63,7 @@ A compact, information-dense [Pi-hole](https://pi-hole.net/) stats card for [Hom
 ### HACS (manual repository)
 
 1. In HACS, go to **Frontend → ⋮ → Custom repositories**
-2. Add `https://github.com/your-username/pihole-card` as a **Lovelace** repository
+2. Add `https://github.com/bangadrum/ha-cards` as a **Lovelace** repository
 3. Install **Pi-hole Card** from HACS
 4. Reload your browser
 

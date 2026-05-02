@@ -192,11 +192,17 @@ const STYLES = `
 
 /* ── Helper: hex → dim rgba ───────────────────────────────────── */
 function hexToDim(hex, alpha = 0.15) {
-  if (!hex) return `rgba(79,142,247,${alpha})`;
-  const c = hex.replace("#", "");
+  // SGC-1 / SGC-2: guard against missing, non-hex, or 3-char hex values
+  if (!hex || typeof hex !== "string" || !hex.startsWith("#")) {
+    return `rgba(79,142,247,${alpha})`;
+  }
+  let c = hex.replace("#", "");
+  if (c.length === 3) c = c[0]+c[0] + c[1]+c[1] + c[2]+c[2]; // #rgb → #rrggbb
+  if (c.length !== 6) return `rgba(79,142,247,${alpha})`;
   const r = parseInt(c.substring(0, 2), 16);
   const g = parseInt(c.substring(2, 4), 16);
   const b = parseInt(c.substring(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(79,142,247,${alpha})`;
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
@@ -234,8 +240,10 @@ class SceneGridCard extends HTMLElement {
   }
 
   set hass(hass) {
+    const wasNull = this._hass === null;
     this._hass = hass;
-    // No need to re-render on every hass update — scenes are fire-and-forget
+    // SGC-3: re-render once hass arrives so _friendlyName() can resolve HA state
+    if (wasNull) this._render();
   }
 
   /* ── Build DOM ─────────────────────────────────────────────── */
@@ -358,7 +366,7 @@ window.customCards.push({
   name: "Scene Grid Card",
   description: "A dense grid of scene launcher tiles.",
   preview: false,
-  documentationURL: "https://github.com/",
+  documentationURL: "https://github.com/bangadrum/ha-cards/tree/main/scene-grid-card",
 });
 
 console.info(
