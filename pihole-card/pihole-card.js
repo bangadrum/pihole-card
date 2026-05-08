@@ -106,6 +106,11 @@ const PIHOLE_STYLES = `
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  [data-entity] {
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  [data-entity]:hover { opacity: 0.75; }
 `;
 
 class PiholeCard extends HTMLElement {
@@ -127,6 +132,20 @@ class PiholeCard extends HTMLElement {
 
       this.shadowRoot.appendChild(style);
       this.shadowRoot.appendChild(card);
+
+      // Single delegated listener — walks up from the clicked target looking
+      // for the nearest [data-entity], then opens the more-info / history panel.
+      // Attached once here so it survives innerHTML replacements on this.content.
+      this.shadowRoot.addEventListener('click', (e) => {
+        let el = e.target;
+        while (el && el !== this.shadowRoot) {
+          if (el.dataset && el.dataset.entity) {
+            this._moreInfo(el.dataset.entity);
+            return;
+          }
+          el = el.parentElement;
+        }
+      });
     }
 
     const c = this._config;
@@ -168,47 +187,58 @@ class PiholeCard extends HTMLElement {
           </svg>
           ${c.title || 'Pi-hole'}
         </div>
-        <div class="ph-status ${isOn ? 'on' : 'off'}">${statusText}</div>
+        <div class="ph-status ${isOn ? 'on' : 'off'}" data-entity="${statusEntity}">${statusText}</div>
       </div>
 
       <div class="ph-hero">
-        <div class="ph-hero-item">
+        <div class="ph-hero-item" data-entity="${prefix}_ads_blocked">
           <div class="ph-hero-label">Ads blocked</div>
           <div class="ph-hero-value accent">${fmt(adsBlocked)}</div>
         </div>
-        <div class="ph-hero-item">
+        <div class="ph-hero-item" data-entity="${prefix}_ads_percentage_blocked">
           <div class="ph-hero-label">Block rate</div>
           <div class="ph-hero-value accent">${isNaN(adsPct) ? adsPct : adsPct.toFixed(1)}<span class="ph-hero-unit"> %</span></div>
         </div>
       </div>
 
       <div class="ph-grid">
-        <div class="ph-stat">
+        <div class="ph-stat" data-entity="${prefix}_dns_queries">
           <span class="ph-stat-label">DNS queries</span>
           <span class="ph-stat-value">${fmt(queries)}</span>
         </div>
-        <div class="ph-stat">
+        <div class="ph-stat" data-entity="${prefix}_dns_queries_cached">
           <span class="ph-stat-label">Cached</span>
           <span class="ph-stat-value">${fmt(cached)}</span>
         </div>
-        <div class="ph-stat">
+        <div class="ph-stat" data-entity="${prefix}_dns_queries_forwarded">
           <span class="ph-stat-label">Forwarded</span>
           <span class="ph-stat-value">${fmt(forwarded)}</span>
         </div>
-        <div class="ph-stat">
+        <div class="ph-stat" data-entity="${prefix}_domains_blocked">
           <span class="ph-stat-label">Blocklist size</span>
           <span class="ph-stat-value">${fmt(domainsBlocked)}</span>
         </div>
-        <div class="ph-stat">
+        <div class="ph-stat" data-entity="${prefix}_dns_unique_domains">
           <span class="ph-stat-label">Unique domains</span>
           <span class="ph-stat-value">${fmt(domains)}</span>
         </div>
-        <div class="ph-stat">
+        <div class="ph-stat" data-entity="${prefix}_dns_unique_clients">
           <span class="ph-stat-label">Clients (seen / unique)</span>
           <span class="ph-stat-value">${seenClients} / ${clients}</span>
         </div>
       </div>
     `;
+  }
+
+  // Fires the standard HA hass-more-info event to open the entity's history panel.
+  // composed:true is required to cross the shadow DOM boundary.
+  _moreInfo(entityId) {
+    if (!entityId) return;
+    this.dispatchEvent(new CustomEvent('hass-more-info', {
+      detail:   { entityId },
+      bubbles:  true,
+      composed: true,
+    }));
   }
 
   // PHC-4: validate config and surface a clear error for bad input
