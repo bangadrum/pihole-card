@@ -67,17 +67,18 @@ All cards use a consistent token set for visual harmony across your dashboards:
 
 | Token | Default (Dark) | Home Assistant Variable |
 |-------|---------------|------------------------|
-| `--c-bg` | `#0d1117` | `var(--card-background-color)` |
-| `--c-surface` | `#161b22` | `var(--secondary-background-color)` |
-| `--c-border` | `rgba(255,255,255,0.09)` | — |
-| `--c-text` | `#e6edf3` | `var(--primary-text-color)` |
-| `--c-muted` | `#8b949e` | `var(--secondary-text-color)` |
-| `--c-ok` | `#3fb950` | — |
-| `--c-warn` | `#d29922` | — |
-| `--c-crit` | `#f85149` | — |
-| `--c-info` | `#58a6ff` | — |
+| --c-bg | #0d1117 | var(--card-background-color) |
+| --c-surface | #161b22 | var(--secondary-background-color) |
+| --c-border | rgba(255,255,255,0.09) | — |
+| --c-text | #e6edf3 | var(--primary-text-color) |
+| --c-muted | #8b949e | var(--secondary-text-color) |
+| --c-ok | #3fb950 | — |
+| --c-warn | #d29922 | — |
+| --c-crit | #f85149 | — |
+| --c-info | #58a6ff | — |
 
 Tokens with HA variable fallbacks automatically adapt to light themes and custom themes.
+
 
 ## 📦 Installation
 Manual Installation
