@@ -86,13 +86,15 @@ Manual Installation
 1. Copy each card's `.js` file to your Home Assistant config directory:
    `<config>/www/ha-cards/<card-name>.js`
 
-2. Add the resource to your Lovelace dashboard:
-   ```yaml
-   resources:
-     - url: /local/ha-cards/<card-name>.js
-       type: module
-   
-3. Add the card to your dashboard by registering it as a dashboard resource in settings.
+2. In Home Assistant go to **Settings → Dashboards → Resources** and add:
+
+```
+URL:  /local/name-of-card.js
+Type: JavaScript module
+```
+
+3. Hard-refresh your browser.
+
 
 ## 📝 Configuration
 
