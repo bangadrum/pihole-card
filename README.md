@@ -2,61 +2,71 @@
 
 A collection of custom Lovelace cards for [Home Assistant](https://www.home-assistant.io/).
 
-All cards share a common dark design language — `--c-*` CSS variable theming, a surface header with a coloured icon square, a 4-column stats strip with 2 px accent bars, and tap-to-history on every sensor value.
+All cards share a common dark design language with consistent theming, making them look great side-by-side on your dashboards.
 
----
+![GitHub Repo stars](https://img.shields.io/github/stars/bangadrum/ha-cards?style=social)
+![GitHub last commit](https://img.shields.io/github/last-commit/bangadrum/ha-cards)
 
-## Cards
+## 🃏 Available Cards
 
-### [NUT UPS Card](./nut-ups-card/)
-
+### [NUT UPS Card](./nut-ups-card)
 Monitor UPS devices via the [Network UPS Tools](https://www.home-assistant.io/integrations/nut/) integration.
 
-Shows battery charge, runtime, load, voltages, temperatures, and calculated efficiency. All values are tappable and open the sensor's history panel.
+**Features:**
+- Battery charge percentage
+- Runtime remaining
+- Load percentage
+- Voltage readings
+- Temperature monitoring
+- Calculated efficiency metrics
+- Tap-to-history on all sensor values
 
----
+### [Pi-hole Card](./pihole-card)
+DNS-level ad blocking statistics from the [Pi-hole](https://www.home-assistant.io/integrations/pi_hole/) integration.
 
-### [Pi-hole Card](./pihole-card/)
+**Features:**
+- Ads blocked counter
+- Block rate percentage
+- DNS query counts
+- Cache statistics
+- Unique domains tracked
+- Client count display
+- Compact two-column layout
 
-DNS-level ad blocking stats from the [Pi-hole](https://www.home-assistant.io/integrations/pi_hole/) integration.
+### [Scene Grid Card](./scene-grid-card)
+Organize and trigger scenes from your Home Assistant dashboard in a grid layout.
 
-Displays ads blocked, block rate, DNS query counts, cache stats, unique domains, and client counts in a compact two-column layout.
+**Features:**
+- Visual scene representation
+- Quick scene activation
+- Customizable grid layout
+- Icon and color support
 
----
-
-### [SMART Sniffer Card](./smart-sniffer-card/)
-
+### [SMART Sniffer Card](./smart-sniffer-card)
 Drive health dashboard for the [SMART Sniffer](https://github.com/DAB-LABS/smart-sniffer) integration.
 
-Colour-coded drive chips with attention and health badges, a click-through detail panel with full SMART diagnostics, and hover tooltips.
+**Features:**
+- Color-coded drive health indicators
+- Attention and health badges
+- Click-through detail panel
+- Full SMART diagnostics display
+- Hover tooltips for quick info
 
----
+### [Switch Port Card Pro Mono](./switch-port-card-pro-mono)
+Professional monochrome-style switch port information display.
 
-### [MythTV Card](./mythtv-card/)
+**Features:**
+- Port status overview
+- Traffic monitoring
+- Compact monochrome design
+- Easy port identification
 
-Full MythTV backend dashboard — active recordings, LiveTV streams, upcoming schedule, recent library, and storage groups. Collapsible sections with conflict detection banners.
+## 🎨 Design System
 
----
+All cards use a consistent token set for visual harmony across your dashboards:
 
-## Installation (all cards)
-
-1. Copy the card's `.js` file to `<config>/www/`.
-2. **Settings → Dashboards → Resources → Add Resource**
-   - URL: `/local/<card-name>.js`
-   - Type: **JavaScript module**
-3. Reload the browser.
-4. Add the card to a dashboard with `type: custom:<card-name>`.
-
-See each card's `README.md` for full configuration options.
-
----
-
-## Design system
-
-All cards use the same token set so they sit consistently side-by-side:
-
-| Token | Default (dark) | Source |
-|---|---|---|
+| Token | Default (Dark) | Home Assistant Variable |
+|-------|---------------|------------------------|
 | `--c-bg` | `#0d1117` | `var(--card-background-color)` |
 | `--c-surface` | `#161b22` | `var(--secondary-background-color)` |
 | `--c-border` | `rgba(255,255,255,0.09)` | — |
@@ -67,4 +77,56 @@ All cards use the same token set so they sit consistently side-by-side:
 | `--c-crit` | `#f85149` | — |
 | `--c-info` | `#58a6ff` | — |
 
-Tokens with HA variable fallbacks adapt automatically to light themes and custom themes.
+Tokens with HA variable fallbacks automatically adapt to light themes and custom themes.
+
+## 📦 Installation
+Manual Installation
+
+1. Copy each card's `.js` file to your Home Assistant config directory:
+   `<config>/www/ha-cards/<card-name>.js`
+
+2. Add the resource to your Lovelace dashboard:
+   ```yaml
+   resources:
+     - url: /local/ha-cards/<card-name>.js
+       type: module
+   
+3. Add the card to your dashboard by registering it as a dashboard resource in settings.
+
+## 📝 Configuration
+
+Each card has its own configuration options. See the individual card's README.md file for detailed configuration examples:
+
+- [NUT UPS Card Configuration](./nut-ups-card/README.md)
+- [Pi-hole Card Configuration](./pihole-card/README.md)
+- [Scene Grid Card Configuration](./scene-grid-card/README.md)
+- [SMART Sniffer Card Configuration](./smart-sniffer-card/README.md)
+- [Switch Port Card Pro Mono Configuration](./switch-port-card-pro-mono/README.md)
+
+## 🌟 Common Features
+
+All cards share these features:
+
+- **Tap-to-History**: Tap any sensor value to view its history panel
+- **Consistent Theming**: Unified `--c-*` CSS variable theming
+- **Surface Headers**: Colored icon squares with clean headers
+- **Stats Strips**: 4-column stats layout with 2px accent bars
+- **Responsive Design**: Adapts to different screen sizes
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🔗 Links
+
+- [Home Assistant](https://www.home-assistant.io/)
+- [Lovelace Dashboard](https://www.home-assistant.io/dashboards/)
+- [HACS](https://hacs.xyz/)
+
+---
+
+*Made with ❤️ for the Home Assistant community*
