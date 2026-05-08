@@ -12,8 +12,6 @@ All cards share a common dark design language — `--c-*` CSS variable theming, 
 
 Monitor UPS devices via the [Network UPS Tools](https://www.home-assistant.io/integrations/nut/) integration.
 
-![NUT UPS Card](./nut-ups-card/preview.png)
-
 Shows battery charge, runtime, load, voltages, temperatures, and calculated efficiency. All values are tappable and open the sensor's history panel.
 
 ---
