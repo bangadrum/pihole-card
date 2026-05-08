@@ -1,5 +1,5 @@
 /**
- * NUT UPS Card — Home Assistant Custom Card  v1.0.0
+ * NUT UPS Card — Home Assistant Custom Card  v1.1.0
  * Monitors UPS devices via the Network UPS Tools (NUT) integration.
  *
  * Install: copy to <config>/www/nut-ups-card.js
@@ -19,7 +19,7 @@
  *   ambient_temp_entity:    sensor.ups_ambient_temperature
  */
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 
 /* ─── Styles ──────────────────────────────────────────────────────────────── */
 const NUT_STYLES = `
@@ -72,6 +72,15 @@ const NUT_STYLES = `
 .header-icon svg { width: 17px; height: 17px; fill: #fff; }
 .header-title { font-size: 14px; font-weight: 500; letter-spacing: .03em; }
 .header-sub   { font-size: 11px; color: var(--c-muted); }
+
+/* Clicking the status entity in the header sub opens more-info */
+.header-sub .entity-link {
+  cursor: pointer;
+  border-bottom: 1px dashed var(--c-muted);
+  transition: color .15s, border-color .15s;
+}
+.header-sub .entity-link:hover { color: var(--c-text); border-color: var(--c-text); }
+
 .status-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
@@ -84,6 +93,14 @@ const NUT_STYLES = `
 .status-dot.alarm   { background: var(--c-crit);  box-shadow: 0 0 0 3px rgba(248,81,73,.18);
                        animation: alarm-blink 1.4s ease-in-out infinite; }
 @keyframes alarm-blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── Clickable value cells ── */
+/* Any element with [data-entity] becomes a tap target */
+[data-entity] {
+  cursor: pointer;
+  transition: background .15s;
+}
+[data-entity]:hover { background: rgba(255,255,255,.04); }
 
 /* ── Stats strip ── */
 .stats {
@@ -269,6 +286,22 @@ class NutUpsCard extends HTMLElement {
     this._render();
   }
 
+  /* ── History / more-info ────────────────────────────────────────────────
+   * Fires the standard HA `hass-more-info` event that the frontend listens
+   * for to open the entity's history/more-info dialog — the same thing that
+   * happens when you tap a value in a built-in entity card.
+   * `composed: true` + `bubbles: true` ensures it propagates through the
+   * shadow DOM boundary up to the HA root event bus.
+   */
+  _moreInfo(entityId) {
+    if (!entityId) return;
+    this.dispatchEvent(new CustomEvent('hass-more-info', {
+      detail:   { entityId },
+      bubbles:  true,
+      composed: true,
+    }));
+  }
+
   /* ── Helpers ── */
   _state(entityId) {
     if (!entityId || !this._hass) return null;
@@ -364,10 +397,10 @@ class NutUpsCard extends HTMLElement {
     const runtime     = this._fmtRuntime(c.battery_runtime_entity);
     const runtimeSecs = this._num(c.battery_runtime_entity);
 
-    const chargePct    = charge !== null ? Math.round(charge) : null;
-    const loadPct      = load   !== null ? Math.round(load)   : null;
-    const chargeClass  = this._chargeClass(charge);
-    const loadClass    = this._loadClass(load);
+    const chargePct   = charge !== null ? Math.round(charge) : null;
+    const loadPct     = load   !== null ? Math.round(load)   : null;
+    const chargeClass = this._chargeClass(charge);
+    const loadClass   = this._loadClass(load);
 
     const effVal = (inputV !== '—' && outputV !== '—')
       ? Math.round(parseFloat(outputV) / parseFloat(inputV) * 100) + ''
@@ -380,7 +413,11 @@ class NutUpsCard extends HTMLElement {
     const card = document.createElement('div');
     card.className = 'card';
 
-    /* Header */
+    /* Header — status entity shown in sub-title, clickable */
+    const statusSpan = c.status_entity
+      ? `<span class="entity-link" data-entity="${c.status_entity}">${statusText || c.status_entity}</span>`
+      : (statusText || '');
+
     card.innerHTML = `
       <div class="header">
         <div class="header-left">
@@ -393,35 +430,37 @@ class NutUpsCard extends HTMLElement {
           </div>
           <div>
             <div class="header-title">${name}</div>
-            <div class="header-sub">Network UPS Tools${statusText ? ' · ' + statusText : ''}</div>
+            <div class="header-sub">Network UPS Tools${statusText ? ' · ' + statusSpan : ''}</div>
           </div>
         </div>
         <div class="status-dot ${dotClass}"></div>
       </div>`;
 
-    /* Stats strip */
+    /* Stats strip — each cell is clickable if an entity is configured */
+    const ei = (entity) => entity ? `data-entity="${entity}"` : '';
+
     card.innerHTML += `
       <div class="stats">
-        <div class="stat">
+        <div class="stat" ${ei(c.battery_charge_entity)}>
           <div class="stat-val ${chargeClass}">
             ${chargePct !== null ? chargePct : '—'}<span class="stat-unit">${chargePct !== null ? '%' : ''}</span>
           </div>
           <div class="stat-lbl">Battery</div>
           ${charge !== null ? `<div class="stat-bar ${chargeClass}" style="width:${charge}%"></div>` : ''}
         </div>
-        <div class="stat">
+        <div class="stat" ${ei(c.battery_runtime_entity)}>
           <div class="stat-val info">${runtime}</div>
           <div class="stat-lbl">Runtime</div>
           ${runtimeSecs !== null ? `<div class="stat-bar info" style="width:${Math.min(runtimeSecs / 3600 * 100, 100)}%"></div>` : ''}
         </div>
-        <div class="stat">
+        <div class="stat" ${ei(c.load_entity)}>
           <div class="stat-val ${loadClass}">
             ${loadPct !== null ? loadPct : '—'}<span class="stat-unit">${loadPct !== null ? '%' : ''}</span>
           </div>
           <div class="stat-lbl">Load</div>
           ${load !== null ? `<div class="stat-bar ${loadClass}" style="width:${Math.min(load, 100)}%"></div>` : ''}
         </div>
-        <div class="stat">
+        <div class="stat" ${ei(c.input_voltage_entity)}>
           <div class="stat-val neutral">
             ${inputV}<span class="stat-unit">${inputV !== '—' ? 'V' : ''}</span>
           </div>
@@ -429,54 +468,71 @@ class NutUpsCard extends HTMLElement {
         </div>
       </div>`;
 
-    /* Battery bar */
+    /* Battery bar — clickable on charge and runtime */
     card.innerHTML += `
       <div class="battery">
-        <div class="batt-visual">
+        <div class="batt-visual" ${ei(c.battery_charge_entity)}>
           <div class="batt-body">
             <div class="batt-fill ${chargeClass}" style="width:${charge !== null ? charge : 0}%"></div>
           </div>
           <div class="batt-nub"></div>
         </div>
-        <div class="batt-info">
+        <div class="batt-info" ${ei(c.battery_charge_entity)}>
           <div class="batt-pct">${chargePct !== null ? chargePct : '—'}<span class="u">%</span></div>
           <div class="batt-lbl">Battery Charge</div>
         </div>
-        <div class="runtime">
+        <div class="runtime" ${ei(c.battery_runtime_entity)}>
           <div class="runtime-val">${runtime}</div>
           <div class="runtime-lbl">Remaining</div>
         </div>
       </div>`;
 
-    /* Metrics grid */
+    /* Metrics grid — each cell clickable */
     const metrics = [
-      { lbl: 'Output V',  val: outputV,  unit: outputV  !== '—' ? 'V'  : '', cls: 'neutral', bar: false },
-      { lbl: 'Batt V',    val: battV,    unit: battV    !== '—' ? 'V'  : '', cls: 'neutral', bar: false },
-      { lbl: 'Load',      val: loadPct !== null ? String(loadPct) : '—',
-                          unit: loadPct !== null ? '%' : '',  cls: loadClass, bar: true, barPct: load !== null ? Math.min(load, 100) : 0 },
-      { lbl: 'Batt Temp', val: battTemp, unit: battTemp !== '—' ? '°C' : '', cls: 'neutral', bar: false },
-      { lbl: 'Ambient',   val: ambTemp,  unit: ambTemp  !== '—' ? '°C' : '', cls: 'neutral', bar: false },
-      { lbl: 'Efficiency',val: effVal,   unit: effUnit,                       cls: 'neutral', bar: false },
+      { lbl: 'Output V',   entity: c.output_voltage_entity,  val: outputV,  unit: outputV  !== '—' ? 'V'  : '', cls: 'neutral', bar: false },
+      { lbl: 'Batt V',     entity: c.battery_voltage_entity, val: battV,    unit: battV    !== '—' ? 'V'  : '', cls: 'neutral', bar: false },
+      { lbl: 'Load',       entity: c.load_entity,
+        val: loadPct !== null ? String(loadPct) : '—',
+        unit: loadPct !== null ? '%' : '', cls: loadClass, bar: true, barPct: load !== null ? Math.min(load, 100) : 0 },
+      { lbl: 'Batt Temp',  entity: c.battery_temp_entity,    val: battTemp, unit: battTemp !== '—' ? '°C' : '', cls: 'neutral', bar: false },
+      { lbl: 'Ambient',    entity: c.ambient_temp_entity,     val: ambTemp,  unit: ambTemp  !== '—' ? '°C' : '', cls: 'neutral', bar: false },
+      { lbl: 'Efficiency', entity: null,                       val: effVal,   unit: effUnit,                      cls: 'neutral', bar: false },
     ];
 
     card.innerHTML += `
       <div class="metrics">
         ${metrics.map(m => `
-          <div class="metric">
+          <div class="metric" ${m.entity ? `data-entity="${m.entity}"` : ''}>
             <div class="metric-lbl">${m.lbl}</div>
             <div class="metric-val ${m.cls}">${m.val}<span class="u">${m.unit}</span></div>
             ${m.bar ? `<div class="metric-bar"><div class="metric-bar-fill ${m.cls}" style="width:${m.barPct}%"></div></div>` : ''}
           </div>`).join('')}
       </div>`;
 
-    /* Footer */
+    /* Footer — click timestamp area to open status more-info */
     card.innerHTML += `
       <div class="footer">
-        <span class="footer-lbl">${c.status_entity || 'nut-ups-card'}</span>
+        <span class="footer-lbl" ${ei(c.status_entity)}>${c.status_entity || 'nut-ups-card'}</span>
         <span class="footer-lbl">${this._timeAgo(lastChanged)}</span>
       </div>`;
 
     root.appendChild(card);
+
+    /* ── Event delegation: single listener on the shadow root ──────────────
+     * Walks up from the clicked target looking for the nearest [data-entity]
+     * ancestor (stopping at the card boundary), then fires hass-more-info.
+     * Using delegation means no listeners are leaked across re-renders.
+     */
+    root.addEventListener('click', (e) => {
+      let el = e.target;
+      while (el && el !== root) {
+        if (el.dataset && el.dataset.entity) {
+          this._moreInfo(el.dataset.entity);
+          return;
+        }
+        el = el.parentElement;
+      }
+    });
   }
 
   getCardSize() { return 4; }
@@ -489,7 +545,7 @@ window.customCards.push({
   type:             'nut-ups-card',
   name:             'NUT UPS Card',
   description:      `UPS monitoring via Network UPS Tools (v${VERSION})`,
-  documentationURL: 'https://www.home-assistant.io/integrations/nut/',
+  documentationURL: 'https://github.com/bangadrum/ha-cards/tree/main/nut-ups-card',
   preview:          false,
 });
 

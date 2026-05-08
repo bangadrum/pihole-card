@@ -1,135 +1,72 @@
 # ha-cards
 
-Custom Lovelace cards for [Home Assistant](https://www.home-assistant.io/). Lightweight, dependency-free, and YAML-configured.
+A collection of custom Lovelace cards for [Home Assistant](https://www.home-assistant.io/).
+
+All cards share a common dark design language — `--c-*` CSS variable theming, a surface header with a coloured icon square, a 4-column stats strip with 2 px accent bars, and tap-to-history on every sensor value.
 
 ---
 
 ## Cards
 
-### [scene-grid-card](https://github.com/bangadrum/ha-cards/blob/main/scene-grid-card)
+### [NUT UPS Card](./nut-ups-card/)
 
-[![version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](scene-grid-card/scene-grid-card.js) [![HA](https://img.shields.io/badge/HA-2024.1%2B-informational?style=flat-square)](https://www.home-assistant.io/)
+Monitor UPS devices via the [Network UPS Tools](https://www.home-assistant.io/integrations/nut/) integration.
 
-A dense, tap-friendly grid for activating scenes. Fits far more scenes into a card than a standard entities card, with per-tile colour accents and an activation flash animation.
+![NUT UPS Card](./nut-ups-card/preview.png)
 
-[![scene-grid-card preview](https://raw.githubusercontent.com/bangadrum/ha-cards/main/scene-grid-card/preview.png)](https://raw.githubusercontent.com/bangadrum/ha-cards/main/scene-grid-card/preview.png)
-
-**Quick start:**
-
-```yaml
-type: custom:scene-grid-card
-title: Scenes
-columns: 3
-scenes:
-  - entity: scene.morning_routine
-    name: Morning
-    icon: mdi:weather-sunrise
-    color: "#f59e0b"
-  - entity: scene.movie_night
-    name: Movie
-    icon: mdi:movie-open
-    color: "#6366f1"
-  - entity: scene.bedtime
-    name: Bedtime
-    icon: mdi:weather-night
-    color: "#8b5cf6"
-```
-
-→ [Full documentation](https://github.com/bangadrum/ha-cards/blob/main/scene-grid-card/README.md)
+Shows battery charge, runtime, load, voltages, temperatures, and calculated efficiency. All values are tappable and open the sensor's history panel.
 
 ---
 
-### [pihole-card](https://github.com/bangadrum/ha-cards/blob/main/pihole-card)
+### [Pi-hole Card](./pihole-card/)
 
-[![version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](pihole-card/pihole-card.js) [![HA](https://img.shields.io/badge/HA-2023.1%2B-informational?style=flat-square)](https://www.home-assistant.io/)
+DNS-level ad blocking stats from the [Pi-hole](https://www.home-assistant.io/integrations/pi_hole/) integration.
 
-A compact, information-dense stats card for [Pi-hole](https://pi-hole.net/). Shows ads blocked, block rate, DNS query breakdown, blocklist size, and client counts — all in a single small card.
-
-[![pihole-card preview](https://raw.githubusercontent.com/bangadrum/ha-cards/main/pihole-card/preview.png)](https://raw.githubusercontent.com/bangadrum/ha-cards/main/pihole-card/preview.png)
-
-**Quick start:**
-
-```yaml
-type: custom:pihole-card
-```
-
-All values are read automatically from the standard Pi-hole integration entities. No extra config needed for a single Pi-hole instance.
-
-→ [Full documentation](https://github.com/bangadrum/ha-cards/blob/main/pihole-card/README.md)
+Displays ads blocked, block rate, DNS query counts, cache stats, unique domains, and client counts in a compact two-column layout.
 
 ---
 
-### [switch-port-card-pro-mono](https://github.com/bangadrum/ha-cards/blob/main/switch-port-card-pro-mono)
+### [SMART Sniffer Card](./smart-sniffer-card/)
 
-[![version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](switch-port-card-pro-mono/switch-port-card-pro-mono.js) [![HA](https://img.shields.io/badge/HA-2024.1%2B-informational?style=flat-square)](https://www.home-assistant.io/)
+Drive health dashboard for the [SMART Sniffer](https://github.com/DAB-LABS/smart-sniffer) integration.
 
-A restyled Lovelace card for SNMP-managed network switches, built on top of the [switch_port_card_pro](https://github.com/partach/switch_port_card_pro) integration. Displays live per-port status and traffic, bandwidth utilisation, and system info (CPU, memory, uptime, firmware, PoE draw) in a consistent dark UI.
-
-**Requires:** [switch_port_card_pro integration](https://github.com/partach/switch_port_card_pro) — install it via HACS before adding this card.
-
-**Quick start:**
-
-```yaml
-type: custom:switch-port-card-pro-mono
-name: Network Switch
-device: sensor.switch_192_168_1_1
-total_ports: 24
-sfp_start_port: 25
-color_scheme: speed
-```
-
-Key features beyond the base card:
-
-- Monospace port rows — traffic values update without causing layout shift
-- `exclude_ports` — hide internal or virtual ports you don't want to see
-- `port_labels` — replace port numbers with short labels (e.g. `6: LAN`, `7: WAN`)
-- Restyled to share a consistent design language with the other cards in this repo
-
-→ [Full documentation](https://github.com/bangadrum/ha-cards/blob/main/switch-port-card-pro-mono/README.md)
+Colour-coded drive chips with attention and health badges, a click-through detail panel with full SMART diagnostics, and hover tooltips.
 
 ---
 
-## Installation
+### [MythTV Card](./mythtv-card/)
 
-### Manual
-
-1. Download the `.js` file from the card's folder
-2. Copy it to `/config/www/` on your HA instance
-3. Go to **Settings → Dashboards → ⋮ → Resources** and add:
-
-   | Field | Value |
-   |-------|-------|
-   | URL   | `/local/<filename>.js` |
-   | Type  | JavaScript module |
-
-4. Hard-reload your browser (`Ctrl+Shift+R` / `Cmd+Shift+R`)
-
-### HACS
-
-1. In HACS go to **Frontend → ⋮ → Custom repositories**
-2. Add `https://github.com/bangadrum/ha-cards` with category **Lovelace**
-3. Install the card(s) you want and reload
+Full MythTV backend dashboard — active recordings, LiveTV streams, upcoming schedule, recent library, and storage groups. Collapsible sections with conflict detection banners.
 
 ---
 
-## Compatibility
+## Installation (all cards)
 
-| Card | Min HA version | Dependencies |
-|------|---------------|--------------|
-| scene-grid-card | 2024.1 | None |
-| pihole-card | 2023.1 | [Pi-hole integration](https://www.home-assistant.io/integrations/pi_hole/) |
-| switch-port-card-pro-mono | 2024.1 | [switch_port_card_pro integration](https://github.com/partach/switch_port_card_pro) |
+1. Copy the card's `.js` file to `<config>/www/`.
+2. **Settings → Dashboards → Resources → Add Resource**
+   - URL: `/local/<card-name>.js`
+   - Type: **JavaScript module**
+3. Reload the browser.
+4. Add the card to a dashboard with `type: custom:<card-name>`.
 
-All cards use vanilla Custom Elements v1 — no Lit, Polymer, or any other framework required.
-
----
-
-## Contributing
-
-Bug reports and pull requests are welcome. Please open an issue first before submitting significant changes.
+See each card's `README.md` for full configuration options.
 
 ---
 
-## Licence
+## Design system
 
-MIT © 2024 bangadrum
+All cards use the same token set so they sit consistently side-by-side:
+
+| Token | Default (dark) | Source |
+|---|---|---|
+| `--c-bg` | `#0d1117` | `var(--card-background-color)` |
+| `--c-surface` | `#161b22` | `var(--secondary-background-color)` |
+| `--c-border` | `rgba(255,255,255,0.09)` | — |
+| `--c-text` | `#e6edf3` | `var(--primary-text-color)` |
+| `--c-muted` | `#8b949e` | `var(--secondary-text-color)` |
+| `--c-ok` | `#3fb950` | — |
+| `--c-warn` | `#d29922` | — |
+| `--c-crit` | `#f85149` | — |
+| `--c-info` | `#58a6ff` | — |
+
+Tokens with HA variable fallbacks adapt automatically to light themes and custom themes.
