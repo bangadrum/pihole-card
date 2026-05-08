@@ -6,11 +6,13 @@ A Home Assistant Lovelace card for monitoring drive health using the SMART Sniff
 
 ## Dependency
 
-This card requires the SMART Sniffer integration:
+This card requires the SMART Sniffer integration.
 
-- https://github.com/DAB-LABS/smart-sniffer
+Install the integration first via HACS:
 
-[![Open SMART Sniffer Repository](https://img.shields.io/badge/GitHub-SMART%20Sniffer-181717?logo=github)](https://github.com/DAB-LABS/smart-sniffer)
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=DAB-LABS&repository=smart-sniffer)
+
+After installing and rebooting, add the integration under **Settings → Devices & Services → Add Integration → SMART Sniffer**.
 
 Ensure the integration is installed and drive entities are available before adding the card.
 
