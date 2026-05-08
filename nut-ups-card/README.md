@@ -2,7 +2,7 @@
 
 A Home Assistant custom Lovelace card for monitoring UPS devices via the [Network UPS Tools (NUT)](https://www.home-assistant.io/integrations/nut/) integration.
 
-![NUT UPS Card preview](preview.png)
+![nut-ups-card preview](https://raw.githubusercontent.com/bangadrum/ha-cards/refs/heads/main/nut-ups-card/preview.png)
 
 ---
 
