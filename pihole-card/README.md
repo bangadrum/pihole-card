@@ -1,133 +1,95 @@
 # pihole-card
 
-A compact, information-dense [Pi-hole](https://pi-hole.net/) stats card for [Home Assistant](https://www.home-assistant.io/) Lovelace dashboards.
+A compact Pi-hole statistics card for Home Assistant Lovelace dashboards. Displays the most important DNS and blocking metrics in a clean, information-dense layout matching the `ha-cards` design language.
 
-![Pi-hole Card Preview](https://raw.githubusercontent.com/bangadrum/ha-cards/main/pihole-card/preview.png)
-
----
-
-## Features
-
-- At-a-glance view of all key Pi-hole metrics in a single small card
-- Prominent ads blocked count and block rate percentage
-- Compact stats grid for DNS queries, cache hits, forwarded queries, blocklist size, unique domains, and client counts
-- Active / Disabled status badge
-- Large numbers automatically shortened (e.g. `88,038` → `88.0K`)
-- Fully theme-aware — respects your HA accent colour, dark/light mode, and card background variables
+![pihole-card preview](./preview.png)
 
 ---
 
-## Preview
+## Dependency
 
-| Active | Disabled |
-|--------|----------|
-| Status badge shown in green | Status badge shown in red |
+This card requires the Home Assistant Pi-hole integration:
 
----
+- https://www.home-assistant.io/integrations/pi_hole/
 
-## Requirements
+[![Open Pi-hole Integration Documentation](https://my.home-assistant.io/badges/integrations.svg)](https://my.home-assistant.io/redirect/integration/?domain=pi_hole)
 
-- Home Assistant 2023.x or later
-- [Pi-hole integration](https://www.home-assistant.io/integrations/pi_hole/) configured and working
-- The following entities available in HA:
-
-| Entity | Description |
-|--------|-------------|
-| `sensor.pi_hole_ads_blocked` | Total ads blocked |
-| `sensor.pi_hole_ads_percentage_blocked` | Block rate (%) |
-| `sensor.pi_hole_dns_queries` | Total DNS queries |
-| `sensor.pi_hole_dns_queries_cached` | Cached DNS queries |
-| `sensor.pi_hole_dns_queries_forwarded` | Forwarded DNS queries |
-| `sensor.pi_hole_dns_unique_clients` | Unique DNS clients |
-| `sensor.pi_hole_dns_unique_domains` | Unique domains seen |
-| `sensor.pi_hole_domains_blocked` | Blocklist size |
-| `sensor.pi_hole_seen_clients` | Total seen clients |
-| `binary_sensor.pi_hole_status` | Pi-hole on/off status |
+Ensure the integration is configured and the required sensors exist before adding the card.
 
 ---
 
 ## Installation
 
-### Manual
+1. Copy `pihole-card.js` into your `config/www/` directory.
+2. In Home Assistant go to **Settings → Dashboards → Resources** and add:
 
-1. Download [`pihole-card.js`](https://raw.githubusercontent.com/bangadrum/ha-cards/main/pihole-card/pihole-card.js)
-2. Copy it to your Home Assistant config directory:
-   ```
-   /config/www/pihole-card.js
-   ```
-3. Add it as a Lovelace resource. Go to **Settings → Dashboards → ⋮ (menu) → Resources** and click **Add Resource**:
-   - **URL:** `/local/pihole-card.js`
-   - **Resource type:** JavaScript module
-4. Reload your browser
+```text
+URL:  /local/pihole-card.js
+Type: JavaScript module
+```
 
-### HACS (manual repository)
-
-1. In HACS, go to **Frontend → ⋮ → Custom repositories**
-2. Add `https://github.com/bangadrum/ha-cards` as a **Lovelace** repository
-3. Install **Pi-hole Card** from HACS
-4. Reload your browser
+3. Hard-refresh your browser.
 
 ---
 
 ## Usage
 
-Add the card to any Lovelace dashboard via the UI or YAML:
+Minimum configuration:
 
 ```yaml
 type: custom:pihole-card
 ```
 
-### Full configuration example
+Example configuration:
 
 ```yaml
 type: custom:pihole-card
-title: Pi-hole
-entity_prefix: sensor.pi_hole
+name: Pi-hole
+
+ads_blocked_entity: sensor.pi_hole_ads_blocked
+ads_percentage_entity: sensor.pi_hole_ads_percentage_blocked
+dns_queries_entity: sensor.pi_hole_dns_queries
+cached_queries_entity: sensor.pi_hole_dns_queries_cached
+forwarded_queries_entity: sensor.pi_hole_dns_queries_forwarded
+unique_clients_entity: sensor.pi_hole_dns_unique_clients
+unique_domains_entity: sensor.pi_hole_dns_unique_domains
+domains_blocked_entity: sensor.pi_hole_domains_blocked
 status_entity: binary_sensor.pi_hole_status
 ```
 
 ---
 
-## Configuration options
+## Features
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `title` | `string` | `Pi-hole` | Card title shown in the header |
-| `entity_prefix` | `string` | `sensor.pi_hole` | Prefix shared by all Pi-hole sensor entities |
-| `status_entity` | `string` | `binary_sensor.pi_hole_status` | Entity used for the Active / Disabled badge |
-
-### Multiple Pi-hole instances
-
-If you have more than one Pi-hole configured in HA (e.g. a secondary instance named `pi_hole_2`), create a separate card for each and adjust the prefix:
-
-```yaml
-type: custom:pihole-card
-title: Pi-hole (secondary)
-entity_prefix: sensor.pi_hole_2
-status_entity: binary_sensor.pi_hole_2_status
-```
+- Large blocked ads counter
+- DNS query statistics grid
+- Active / disabled status badge
+- Automatic number shortening for large values
+- Responsive compact layout
+- Fully theme-aware styling
 
 ---
 
-## Troubleshooting
+## Configuration reference
 
-**Card shows `N/A` for all values**  
-Check that the Pi-hole integration is set up and that the entities listed in the Requirements section exist in your HA instance. Go to **Developer Tools → States** and search for `pi_hole` to confirm.
-
-**Card doesn't appear after installing**  
-Clear your browser cache or do a hard reload (`Ctrl+Shift+R` / `Cmd+Shift+R`). In some setups you may also need to restart HA after adding a new Lovelace resource.
-
-**Entity prefix doesn't match**  
-If your entities are named differently (e.g. `sensor.pihole_ads_blocked` without the underscore), set `entity_prefix: sensor.pihole` in your card config.
+| Key | Type | Description |
+|-----|------|-------------|
+| `type` | string | Must be `custom:pihole-card` |
+| `name` | string | Card title |
+| `ads_blocked_entity` | string | Ads blocked sensor |
+| `ads_percentage_entity` | string | Percentage blocked sensor |
+| `dns_queries_entity` | string | Total DNS queries sensor |
+| `cached_queries_entity` | string | Cached queries sensor |
+| `forwarded_queries_entity` | string | Forwarded queries sensor |
+| `unique_clients_entity` | string | Unique client count sensor |
+| `unique_domains_entity` | string | Unique domain count sensor |
+| `domains_blocked_entity` | string | Blocklist domain count sensor |
+| `status_entity` | string | Pi-hole enabled / disabled status sensor |
 
 ---
 
-## Contributing
+## Notes
 
-Pull requests and issues are welcome. Please open an issue first for significant changes so we can discuss the approach.
-
----
-
-## License
-
-[MIT](LICENSE)
+- The card is designed for the official Home Assistant Pi-hole integration.
+- Missing entities are hidden automatically where possible.
+- Styling adapts automatically to Home Assistant themes.

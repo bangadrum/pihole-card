@@ -1,125 +1,98 @@
-# NUT UPS Card
+# nut-ups-card
 
-A Home Assistant custom Lovelace card for monitoring UPS devices via the [Network UPS Tools (NUT)](https://www.home-assistant.io/integrations/nut/) integration.
+A compact Home Assistant Lovelace card for monitoring UPS systems using the Network UPS Tools (NUT) integration. Designed to match the consistent visual style used across the `ha-cards` collection.
 
-![nut-ups-card preview](https://raw.githubusercontent.com/bangadrum/ha-cards/refs/heads/main/nut-ups-card/preview.png)
+![nut-ups-card preview](./preview.png)
 
 ---
 
-## Features
+## Dependency
 
-- **Status dot** — colour-coded online / on-battery / alarm indicator with animated ring glow
-- **4-column stats strip** — battery charge, runtime, load, and input voltage, each with a 2 px accent bar
-- **Battery bar** — visual fill gauge with green → amber → red colouring based on charge level
-- **6-metric grid** — output voltage, battery voltage, load, battery temperature, ambient temperature, and calculated efficiency
-- **Tap any value** — clicking a stat cell, battery bar, or metric fires the standard `hass-more-info` event, opening that sensor's history panel exactly as a built-in entity card does
-- **HA theme aware** — all colours resolve through `var(--card-background-color)`, `var(--primary-text-color)`, etc., so the card adapts to light and dark themes automatically
+This card requires the Home Assistant NUT integration:
+
+- https://www.home-assistant.io/integrations/nut/
+
+[![Open NUT Integration Documentation](https://my.home-assistant.io/badges/integrations.svg)](https://my.home-assistant.io/redirect/integration/?domain=nut)
+
+Ensure the integration is configured and working before adding the card.
 
 ---
 
 ## Installation
 
-1. Copy `nut-ups-card.js` to `<config>/www/nut-ups-card.js`.
-2. Add it as a Lovelace resource:
-   **Settings → Dashboards → Resources → Add Resource**
-   | Field | Value |
-   |---|---|
-   | URL | `/local/nut-ups-card.js` |
-   | Type | JavaScript module |
-3. Reload the browser.
+1. Copy `nut-ups-card.js` into your `config/www/` directory.
+2. In Home Assistant go to **Settings → Dashboards → Resources** and add:
+
+```text
+URL:  /local/nut-ups-card.js
+Type: JavaScript module
+```
+
+3. Hard-refresh your browser.
 
 ---
 
-## Configuration
+## Usage
+
+Minimum configuration:
 
 ```yaml
 type: custom:nut-ups-card
-name: Server Room UPS                     # optional, default "UPS"
-status_entity:          sensor.ups_status
-battery_charge_entity:  sensor.ups_battery_charge
-battery_runtime_entity: sensor.ups_battery_runtime
-battery_voltage_entity: sensor.ups_battery_voltage
-input_voltage_entity:   sensor.ups_input_voltage
-output_voltage_entity:  sensor.ups_output_voltage
-load_entity:            sensor.ups_load
-battery_temp_entity:    sensor.ups_battery_temperature
-ambient_temp_entity:    sensor.ups_ambient_temperature
+name: UPS
+battery_charge_entity: sensor.ups_battery_charge
+status_entity: sensor.ups_status
 ```
 
-All entity keys are optional. Any cell whose entity is not configured (or returns `unavailable` / `unknown`) renders a `—` placeholder. The Efficiency cell is computed from output ÷ input voltage and has no entity of its own.
+Example configuration:
 
-### Entity name conventions
+```yaml
+type: custom:nut-ups-card
+name: Server Room UPS
 
-The NUT integration creates entities named after the UPS device. If your device is called `ups`, the default entity IDs are:
-
-| Config key | Default entity ID |
-|---|---|
-| `status_entity` | `sensor.ups_status` |
-| `battery_charge_entity` | `sensor.ups_battery_charge` |
-| `battery_runtime_entity` | `sensor.ups_battery_runtime` |
-| `battery_voltage_entity` | `sensor.ups_battery_voltage` |
-| `input_voltage_entity` | `sensor.ups_input_voltage` |
-| `output_voltage_entity` | `sensor.ups_output_voltage` |
-| `load_entity` | `sensor.ups_load` |
-| `battery_temp_entity` | `sensor.ups_battery_temperature` |
-| `ambient_temp_entity` | `sensor.ups_ambient_temperature` |
-
-If your device has a different name (e.g. `apc`), substitute it in each entity ID accordingly.
-
----
-
-## Tap-to-history
-
-Every clickable area carries a `data-entity` attribute. A single delegated `click` listener on the shadow root walks up the DOM tree to find the nearest entity, then dispatches:
-
-```js
-new CustomEvent('hass-more-info', {
-  detail:   { entityId },
-  bubbles:  true,
-  composed: true,   // crosses the shadow DOM boundary
-})
+status_entity: sensor.cyberpower_status
+battery_charge_entity: sensor.cyberpower_battery_charge
+runtime_entity: sensor.cyberpower_battery_runtime
+load_entity: sensor.cyberpower_load
+input_voltage_entity: sensor.cyberpower_input_voltage
+output_voltage_entity: sensor.cyberpower_output_voltage
+battery_voltage_entity: sensor.cyberpower_battery_voltage
+battery_temperature_entity: sensor.cyberpower_battery_temperature
+ambient_temperature_entity: sensor.server_room_temperature
 ```
 
-This is the same mechanism used by all built-in Lovelace cards.
+---
 
-**Clickable areas:**
+## Features
 
-| Area | Entity opened |
-|---|---|
-| Battery stat cell | `battery_charge_entity` |
-| Runtime stat cell | `battery_runtime_entity` |
-| Load stat cell | `load_entity` |
-| Input V stat cell | `input_voltage_entity` |
-| Battery bar + percentage | `battery_charge_entity` |
-| Runtime value | `battery_runtime_entity` |
-| Output V metric | `output_voltage_entity` |
-| Batt V metric | `battery_voltage_entity` |
-| Load metric | `load_entity` |
-| Batt Temp metric | `battery_temp_entity` |
-| Ambient metric | `ambient_temp_entity` |
-| Status text in sub-title | `status_entity` |
-| Entity ID in footer | `status_entity` |
-
-Cells without a configured entity are not interactive.
+- Status indicator with online / battery / alarm state colouring
+- Animated status ring glow
+- Battery charge bar with dynamic colouring
+- Compact metrics grid
+- Tap-to-history support for all values
+- Theme-aware styling for dark and light dashboards
 
 ---
 
-## Colour thresholds
+## Configuration reference
 
-| Metric | Green | Amber | Red |
-|---|---|---|---|
-| Battery charge | ≥ 50 % | 25 – 49 % | < 25 % |
-| Load | ≤ 60 % | 61 – 80 % | > 80 % |
-| Status dot | On Line | On Battery | Alarm / Fault / Overload |
+| Key | Type | Description |
+|-----|------|-------------|
+| `type` | string | Must be `custom:nut-ups-card` |
+| `name` | string | Card title |
+| `status_entity` | string | UPS status sensor |
+| `battery_charge_entity` | string | Battery percentage sensor |
+| `runtime_entity` | string | Runtime remaining sensor |
+| `load_entity` | string | UPS load sensor |
+| `input_voltage_entity` | string | Input voltage sensor |
+| `output_voltage_entity` | string | Output voltage sensor |
+| `battery_voltage_entity` | string | Battery voltage sensor |
+| `battery_temperature_entity` | string | Battery temperature sensor |
+| `ambient_temperature_entity` | string | Ambient temperature sensor |
 
 ---
 
-## Changelog
+## Notes
 
-### v1.1.0
-- Added tap-to-history: clicking any value opens the sensor's more-info / history panel.
-- Status text in header sub-title is now a tappable dashed-underline link.
-- Footer entity ID is now tappable.
-
-### v1.0.0
-- Initial release.
+- All entities should expose numeric states where applicable.
+- The card automatically adapts to Home Assistant themes using CSS variables.
+- Any unavailable entities are gracefully hidden from the layout.
